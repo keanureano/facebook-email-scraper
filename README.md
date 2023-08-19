@@ -1,4 +1,4 @@
-# Facebook Group Scraper Tutorial
+# Facebook Email Scraper
 
 This tutorial guides you through the process of using the `facebookScraper.js` script to extract member data from a Facebook group, and the `emailScraper` script to search for emails associated with names. Follow the steps below to get started:
 
