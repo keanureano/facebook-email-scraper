@@ -8,7 +8,7 @@ const createCsvWriter = require("csv-writer").createObjectCsvWriter;
   const page = await browser.newPage();
 
   const names = await readNamesFromCsv("input.csv");
-  const results = await searchNamesForEmails(page, names);
+  const results = await searchNamesForEmailsAndPhones(page, names);
 
   saveResultsToCsv(results, "output.csv");
 
@@ -35,11 +35,11 @@ async function readNamesFromCsv(csvFilePath) {
   });
 }
 
-async function searchNamesForEmails(page, names) {
+async function searchNamesForEmailsAndPhones(page, names) {
   const results = [];
 
   for (const name of names) {
-    const searchQuery = `site:facebook.com "${name}" "@gmail.com"`;
+    const searchQuery = `site:facebook.com "${name}" "@gmail.com" OR "phone"`;
     const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(
       searchQuery
     )}`;
@@ -53,9 +53,16 @@ async function searchNamesForEmails(page, names) {
       return resultLinks.map((link) => link.textContent);
     });
 
+    const foundPhone = findPhoneInResults(searchResults);
     const foundEmail = findEmailInResults(searchResults);
-    const [firstName, ...surname] = name.split(" ");
-    const result = { firstName, surname, email: foundEmail };
+
+    const [firstName, ...lastName] = name.split(" ");
+    const result = {
+      firstName,
+      lastName,
+      email: foundEmail,
+      phone: foundPhone,
+    };
 
     console.log(result);
 
@@ -63,6 +70,17 @@ async function searchNamesForEmails(page, names) {
   }
 
   return results;
+}
+
+function findPhoneInResults(searchResults) {
+  const phoneRegex = /(?:\+\d{1,3}[-\s]?)?\d{3,4}[-\s]?\d{3,4}[-\s]?\d{3,4}/g;
+  for (const result of searchResults) {
+    const phoneMatches = result.match(phoneRegex);
+    if (phoneMatches) {
+      return phoneMatches[0];
+    }
+  }
+  return null;
 }
 
 function findEmailInResults(searchResults) {
@@ -83,6 +101,7 @@ function saveResultsToCsv(results, csvFilePath) {
       { id: "firstName", title: "First Name" },
       { id: "lastName", title: "Last Name" },
       { id: "email", title: "Email" },
+      { id: "phone", title: "Phone" },
     ],
   });
 
