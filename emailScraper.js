@@ -61,7 +61,7 @@ async function searchNamesForEmailsAndPhones(page, names) {
     const foundPhone = findPhoneInResults(searchResults);
     const foundEmail = findEmailInResults(searchResults);
 
-    const [firstName, ...lastName] = name.split(" ");
+    const [firstName, lastName] = name.split(" ");
     const result = {
       firstName,
       lastName,
