@@ -10,9 +10,14 @@ const createCsvWriter = require("csv-writer").createObjectCsvWriter;
   const names = await readNamesFromCsv("input.csv");
   const results = await searchNamesForEmailsAndPhones(page, names);
 
-  saveResultsToCsv(results, "output.csv");
-
-  await browser.close();
+  try {
+    results = await searchNamesForEmailsAndPhones(page, names);
+  } catch (error) {
+    console.error("An error occurred during the search:", error);
+  } finally {
+    saveResultsToCsv(results, "output.csv");
+    await browser.close();
+  }
 })();
 
 async function readNamesFromCsv(csvFilePath) {
