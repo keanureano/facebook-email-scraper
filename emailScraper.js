@@ -54,7 +54,9 @@ async function searchNamesForEmails(page, names) {
     });
 
     const foundEmail = findEmailInResults(searchResults);
-    const result = { name, email: foundEmail };
+    const [firstName, ...surname] = name.split(" ");
+    const result = { firstName, surname, email: foundEmail };
+
     console.log(result);
 
     results.push(result);
@@ -78,7 +80,8 @@ function saveResultsToCsv(results, csvFilePath) {
   const csvWriter = createCsvWriter({
     path: csvFilePath,
     header: [
-      { id: "name", title: "Name" },
+      { id: "firstName", title: "First Name" },
+      { id: "lastName", title: "Last Name" },
       { id: "email", title: "Email" },
     ],
   });
